@@ -1,0 +1,70 @@
+//Intrinsic Time prediction
+
+First, let's load stock data of a company from yahoo finance using pandas datareader:
+//python
+import pandas as pd
+import pandas_datareader as pdr
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from keras.models import Sequential
+from keras.layers import LSTM, Dense
+
+symbol = 'AAPL'
+start_date = '2016-01-01'
+end_date = '2023-09-16'
+
+df = pdr.get_data_yahoo(symbol, start=start_date, end=end_date)
+
+
+Next, preprocess the data and transform it so that it can be ingested by the LSTM:
+
+# Calculate the daily return
+df['return'] = df['Adj Close'].pct_change()
+
+# Remove the NaN at the head of our data.
+df = df.dropna()
+
+scaler = MinMaxScaler(feature_range=(0,1))
+df['return'] = scaler.fit_transform(np.array(df['return']).reshape(-1,1))
+
+
+Next, split the data into train and test datasets and construct the input for LSTM:
+
+train_size = int(df.shape[0]*0.7)
+
+x_train, y_train = [],[]
+for i in range(60, train_size):
+    x_train.append(df['return'][i-60:i])
+    y_train.append(df['return'][i])
+
+x_train, y_train = np.array(x_train), np.array(y_train)
+
+
+Next, create and train LSTM models:
+
+python
+model = Sequential()
+model.add(LSTM(units=50, return_sequences=True, input_shape=(x_train.shape[1], 1)))
+model.add(LSTM(units=50))
+model.add(Dense(1))
+
+model.compile(loss='mean_squared_error', optimizer='adam')
+model.fit(x_train, y_train, epochs=1, batch_size=1, verbose=2)
+
+# use the model to predict the prices of the test set
+x_test = df['return'][train_size-60:]
+y_test = df['return'][train_size:]
+
+x_test = np.array(x_test)
+x_test = np.reshape(x_test, (x_test.shape[1], 1, x_test.shape[1]))
+
+predicted_price = model.predict(x_test)
+predicted_price = scaler.inverse_transform(predicted_price)
+
+
+Please, note that this is a very simplistic approach and there are several other aspects you might want to consider when trying to predict stock prices. Additionally, 
+remember that this can't guarantee future results, and it's not advised to use this for actual stock trading.
+
+Also, be aware that you will need the necessary libraries installed in your Python environment in order to run this script correctly. The key libraries include pandas, 
+keras, sklearn, and pandas_datareader, installed via pip install pandas keras sklearn pandas_datareader.
+
