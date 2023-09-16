@@ -15,6 +15,21 @@ end_date = '2023-09-16'
 
 df = pdr.get_data_yahoo(symbol, start=start_date, end=end_date)
 
+ //In this example we look at Bitcoin instead of AAPL
+
+import pandas as pd
+import pandas_datareader as pdr
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from keras.models import Sequential
+from keras.layers import LSTM, Dense
+
+symbol = 'BTC-USD' # symbol for Bitcoin
+start_date = '2016-01-01'
+end_date = '2023-09-16'
+
+df = pdr.get_data_yahoo(symbol, start=start_date, end=end_date)
+
 
 Next, preprocess the data and transform it so that it can be ingested by the LSTM:
 
