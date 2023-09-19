@@ -1,1 +1,1 @@
-# smart-contract-101
+# TradeStrats-101
