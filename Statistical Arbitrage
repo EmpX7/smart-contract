@@ -1,4 +1,4 @@
- 
+Bitcoin - Ethereum pair 
 
 pip install keras tensorflow statsmodels pandas_datareader
 
@@ -87,3 +87,32 @@ else:
 
 //This code includes an implementation of the LSTM model using Keras, and it prepares the data (scaling it, creating a train-test split) accordingly. Please note that the LSTM model can take significant amount of time for training 
 depending upon your machine's computing capabilities. LSTM model parameters may need adjustments
+
+Now for Bitcoin - USDT Pair
+
+# Get historic 'klines' for Bitcoin and BNB
+bitcoin_klines = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1DAY, "1 Jan, 2022")
+bnb_klines = client.get_historical_klines("BNBUSDT", Client.KLINE_INTERVAL_1DAY, "1 Jan, 2022")
+
+# Convert data to DataFrame and get only the close prices
+bitcoin_close = pd.DataFrame(bitcoin_klines, columns = [...])['close'].astype('float')
+bnb_close = pd.DataFrame(bnb_klines, columns = [...])['close'].astype('float')
+
+data = pd.DataFrame({'BTC': bitcoin_close, 'BNB': bnb_close})
+
+# ...
+
+# Adjust the co-integration check
+if pvalue <= 0.05:
+    print('Pair BTC and BNB is cointegrated')
+else:
+    print('Pair BTC and BNB is not cointegrated')
+
+# ...
+
+# Adjust the trading recommendation message
+if rms < 0.02:
+   print('Pair BTC and BNB can be good for algorithmic trading')
+else:
+   print('Pair BTC and BNB may not be the best option for algorithmic trading')
+
