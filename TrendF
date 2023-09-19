@@ -1,0 +1,86 @@
+python
+
+import cryptocompare
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+def calculate_EMA(data, window):
+    return data.ewm(span=window, adjust=False).mean()
+
+def calculate_MACD(data, short_window, long_window):
+    ShortEMA = calculate_EMA(data, short_window) # Short term EMA
+    LongEMA = calculate_EMA(data, long_window) # Long term EMA
+    MACD = ShortEMA - LongEMA
+    signal = calculate_EMA(MACD, 9)
+    return MACD, signal
+
+def fetch_crypto_data(crypto_name):
+    data = cryptocompare.get_historical_price_day(crypto_name, currency='USD', limit=1000, toTs=pd.Timestamp.utcnow()) 
+    df = pd.DataFrame(data)
+    df['time'] = pd.to_datetime(df['time'], unit='s')
+    df.set_index('time', inplace=True, drop=False)
+    return df
+
+def generate_signals(df):
+    Buy = []
+    Sell = []
+    flag = -1
+
+    for i in range(0,len(df)):
+        if df['MACD'][i] > df['Signal Line'][i]:
+            Sell.append(np.nan)
+            if flag != 1:
+                Buy.append(df['close'][i])
+                flag = 1
+            else:
+                Buy.append(np.nan)
+        elif df['MACD'][i] < df['Signal Line'][i]:
+            Buy.append(np.nan)
+            if flag != 0:
+                Sell.append(df['close'][i])
+                flag = 0
+            else:
+                Sell.append(np.nan)
+        else:
+            Sell.append(np.nan)
+            Buy.append(np.nan)
+
+    return (Buy, Sell)
+
+# Fetch historical data
+crypto_data = fetch_crypto_data('BTC')
+
+# Calculate MACD and Signal Line indicators
+crypto_data['MACD'], crypto_data['Signal Line'] = calculate_MACD(crypto_data['close'], 12, 26)
+
+# Create buy and sell columns
+a = generate_signals(crypto_data)
+crypto_data['Buy_Signal_Price'] = a[0]
+crypto_data['Sell_Signal_Price'] = a[1]
+
+# Plot MACD and signal line
+plt.figure(figsize=(12.5, 4.5))
+plt.plot(crypto_data['MACD'], label='BTC MACD', color = 'red')
+plt.plot(crypto_data['Signal Line'], label='Signal Line', color='blue')
+plt.legend(loc='upper left')
+plt.show()
+
+# Plot buy and sell signals
+plt.figure(figsize=(12.6, 4.6))
+plt.scatter(crypto_data.index, crypto_data['Buy_Signal_Price'], color = 'green', label='Buy', marker = '^', alpha = 1)
+plt.scatter(crypto_data.index, crypto_data['Sell_Signal_Price'], color = 'red', label='Sell', marker = 'v', alpha = 1)
+plt.plot(crypto_data['close'], label='Close Price', alpha = 0.35)
+plt.title('Close Price Buy / Sell Signals')
+plt.xlabel('Time')
+plt.ylabel('Close Price')
+plt.legend(loc='upper left')
+plt.show()
+
+In this script, the fetch_crypto_data function fetches historical price data for a chosen cryptocurrency using the cryptocompare library.
+
+The calculate_EMA function computes the Exponential Moving Average (EMA), and the calculate_MACD function calculates the Moving Average Convergence Divergence (MACD) line and the signal line.
+
+In the generate_signals function, buy signals are generated when the MACD line crosses above the signal line, indicating it may be a good time to buy. Conversely, sell signals are generated when the MACD line crosses below the signal line, indicating it may be a good time to sell.
+
+MACD and signal line are then plotted, as well as buy / sell signals overlaid on the close price.
