@@ -1,0 +1,52 @@
+//We use Binance API, one of the leading cryptocurrency exchange platforms, to retrieve the BTC/USDT (Bitcoin to USD Tether) trading data. 
+//Make sure to replace 'YOUR_API_KEY' and 'YOUR_SECRET_KEY' with your actual API key and secret key.
+
+pip install python-binance
+
+from datetime import datetime, timedelta
+from binance.client import Client
+import pandas as pd
+
+# Initialize the Binance API client
+client = Client('YOUR_API_KEY', 'YOUR_SECRET_KEY')
+
+def get_crypto_data(symbol, interval, start_time, end_time):
+    """
+    Fetches the klines/candlestick data from Binance API and returns it as a DataFrame.
+
+    :param symbol: string, trading pair symbol in Binance format (eg, 'BTCUSDT' for Bitcoin)
+    :param interval: string, interval for candlestick data in Binance format (eg, '1m', '5m', '1h')
+    :param start_time: datetime, start time for fetching data
+    :param end_time: datetime, end time for fetching data
+    """
+    # Fetch raw kline data
+    raw_data = client.get_klines(symbol=symbol, interval=interval, startTime=start_time, endTime=end_time)
+
+    # Generate DataFrame and format it
+    data = pd.DataFrame(raw_data, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume', 'close_time', 'quote_asset_volume', 'trades_count', 'tb_base_asset_volume', 'tb_quote_asset_volume', 'ignore'] )
+    data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
+
+    return data
+
+def calculate_twap(data):
+    """
+    Calculates the Time-Weighted Average Price (TWAP) based on the fetched data
+
+    :param data: DataFrame, contains the fetched data
+    """
+    data['volume'] = data['volume'].astype(float)
+    data['close'] = data['close'].astype(float)
+
+    data['weighted_price'] = data['close'] * data['volume']
+    twap = data['weighted_price'].sum() / data['volume'].sum()
+
+    return twap
+
+start_time = int((datetime.now() - timedelta(days=1)).timestamp()) * 1000
+end_time = int(datetime.now().timestamp()) * 1000
+
+data = get_crypto_data('BTCUSDT', Client.KLINE_INTERVAL_1MINUTE, start_time, end_time)
+twap = calculate_twap(data)
+
+print(f'TWAP for BTC/USDT in the last 24 hours: {twap}')
+
