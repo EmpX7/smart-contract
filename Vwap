@@ -1,0 +1,43 @@
+//We have data for the trading volumes and prices of different cryptocurrencies at different times. In this case, I assume we have a dictionary with the following structure for each currency: {time: (price, volume)}
+
+//We need to calculate the product of volume and price at each time for each currency. This will give us a measure of the "importance" of the price at that time.
+
+//Then we sum these products for each currency to get the total "weighted" price.
+
+//We also sum all volumes for each currency to get a normalization factor.
+
+//We divide the total "weighted" price by the total volume to get the volume-weighted average price.
+
+python
+
+import pandas as pd
+
+def calculate_vwap(data):
+    vwap = {}
+    for currency, values in data.items():
+        df = pd.DataFrame(values, columns=['time', 'price', 'volume'])
+        df['pv'] = df['price'] * df['volume']
+        vwap[currency] = df['pv'].sum() / df['volume'].sum()
+    return vwap
+
+# Example data
+data = {
+    'Bitcoin': [
+        ('2023-09-19 00:00:00',  47231.20, 0.321),
+        ('2023-09-19 00:01:00',  47235.10, 0.654),
+        ('2023-09-19 00:02:00',  47240.00, 1.002)
+        # add more data points as needed
+    ],
+    'Ethereum': [
+        ('2023-09-19 00:00:00',  3400.20, 0.653),
+        ('2023-09-19 00:01:00',  3401.30, 1.456),
+        ('2023-09-19 00:02:00',  3402.00, 2.003)
+        # add more data points as needed
+    ]
+    # add more currencies as needed
+}
+
+vwap = calculate_vwap(data)
+
+for currency, value in vwap.items():
+    print(f'The VWAP for {currency} is {value}')
