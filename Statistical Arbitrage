@@ -1,0 +1,89 @@
+ 
+
+pip install keras tensorflow statsmodels pandas_datareader
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from binance.client import Client
+from keras.models import Sequential
+from keras.layers import LSTM, Dense, Dropout
+from sklearn.preprocessing import MinMaxScaler
+from statsmodels.tsa.stattools import adfuller
+from statsmodels.tsa.vector_ar.vecm import coint_johansen
+from pandas_datareader import data as pdr
+from datetime import datetime
+from sklearn.linear_model import LinearRegression
+
+# Binance API
+client = Client('your_api_key', 'your_api_secret')
+
+# Get historic 'klines' for Bitcoin and Ethereum
+bitcoin_klines = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_1DAY, "1 Jan, 2022")
+ethereum_klines = client.get_historical_klines("ETHUSDT", Client.KLINE_INTERVAL_1DAY, "1 Jan, 2022")
+
+# Convert data to DataFrame and get only the close prices
+bitcoin_close = pd.DataFrame(bitcoin_klines, columns = ['date', 'open', 'high', 'low', 'close', 'volume', 'close_time', 'quote_asset_volume', 'trades', 'taker_buy_base', 'taker_buy_quote', 'ignore'])['close'].astype('float')
+ethereum_close = pd.DataFrame(ethereum_klines, columns = ['date', 'open', 'high', 'low', 'close', 'volume', 'close_time', 'quote_asset_volume', 'trades', 'taker_buy_base', 'taker_buy_quote', 'ignore'])['close'].astype('float')
+
+data = pd.DataFrame({'BTC':bitcoin_close, 'ETH':ethereum_close})
+
+# Check for cointegration
+score, pvalue, _ = coint_johansen(data,-1,1)
+
+if pvalue <= 0.05:
+    print('Pair BTC and ETH is cointegrated')
+else:
+    print('Pair BTC and ETH is not cointegrated')
+
+# data preprocessing
+scaler = MinMaxScaler()
+data_scaled = scaler.fit_transform(data)
+
+# creating train and test sets
+train = data_scaled[:800]
+valid = data_scaled[800:]
+
+# create datasets for LSTM, considering last 60 days data for predicting the next day
+x_train, y_train = [], []
+for i in range(60,len(train)):
+    x_train.append(train[i-60:i])
+    y_train.append(train[i])
+
+# convert to numpy arrays and reshape for tensorflow 2.x+ compatibility
+x_train, y_train = np.array(x_train), np.array(y_train)
+x_train = np.reshape(x_train, (x_train.shape[0],x_train.shape[1],2))
+
+# create and fit the LSTM network
+model = Sequential()
+model.add(LSTM(50, return_sequences=True, input_shape=(x_train.shape[1],2)))
+model.add(LSTM(50))
+model.add(Dense(1))
+model.compile(loss='mean_squared_error', optimizer='adam')
+model.fit(x_train, y_train, epochs=3, batch_size=1, verbose=2)
+
+# predicting values, using past 60 days data from the train data
+inputs = data[len(data) - len(valid) - 60:].values
+inputs = inputs.reshape(-1,2)
+inputs  = scaler.transform(inputs)
+
+# create test datasets and predict
+X_test = []
+for i in range(60,inputs.shape[0]):
+    X_test.append(inputs[i-60:i])
+X_test = np.array(X_test)
+X_test = np.reshape(X_test, (X_test.shape[0],X_test.shape[1],2))
+predicted_price = model.predict(X_test)
+predicted_price = scaler.inverse_transform(predicted_price)
+
+# calculate RMSE
+rms = np.sqrt(np.mean(np.power((valid - predicted_price),2)))
+
+# If the RMS error of our model is less than 2% (or any other threshold you want to set), it is good for trading
+if rms < 0.02:
+   print('Pair BTC and ETH can be good for algorithmic trading')
+else:
+   print('Pair BTC and ETH may not be the best option for algorithmic trading')
+
+//This code includes an implementation of the LSTM model using Keras, and it prepares the data (scaling it, creating a train-test split) accordingly. Please note that the LSTM model can take significant amount of time for training 
+depending upon your machine's computing capabilities. LSTM model parameters may need adjustments
