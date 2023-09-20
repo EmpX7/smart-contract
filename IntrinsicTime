@@ -50,9 +50,4 @@ predicted_price = model.predict(x_test)
 predicted_price = scaler.inverse_transform(predicted_price)
 
 
-Please, note that this is a very simplistic approach and there are several other aspects you might want to consider when trying to predict stock prices. Additionally, 
-remember that this can't guarantee future results, and it's not advised to use this for actual stock trading.
-
-Also, be aware that you will need the necessary libraries installed in your Python environment in order to run this script correctly. The key libraries include pandas, 
-keras, sklearn, and pandas_datareader, installed via pip install pandas keras sklearn pandas_datareader.
-
+Make sure you substitute 'python' for 'tensorflow' when you import 'keras' as 'python' will not be recognized as a known module.
