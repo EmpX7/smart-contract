@@ -1,3 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Trading Bot</title>
+</head>
+<body>
+    <h1>Stock Trading Bot</h1>
+
+    <div>
+        <label>Stock Symbol:</label>
+        <input id="symbol" type="text" placeholder="BTC-USD">
+    </div>
+    
+    <br>
+
+    <button onclick="getPrediction()">Get Prediction</button>
+
+    <div id="prediction"></div>
+
+    <script src="app.js"></script>
+
+</body>
+</html>
+
+
+
 //Intrinsic Time prediction
 
 First, let's load stock data of a company from yahoo finance using pandas datareader:
