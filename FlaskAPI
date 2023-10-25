@@ -1,0 +1,79 @@
+Here is an architectural approach for your requirement:
+
+Flask API - This would serve as an interface between your Python code (deep learning model) and the outside world (in this case, your HTML/JavaScript front end).
+
+JavaScript (JS) - This is part of the HTML/CSS/JS trio that forms the structural, stylistic and functional skeleton of webpages. JS in this case would be used for calling the Flask API, obtaining the output and showing it on the webpage.
+
+HTML/CSS - These two would be used for structuring and styling your webpage.
+
+Here is a simplified Flask API for your Python code:
+
+python
+Copy code
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)  # Enabling CORS
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    # Insert all your existing Python code here
+
+    # For the sake of example:
+    data = request.json
+    pair = data['pair']
+    # Now utilize this pair data in your existing python script
+
+    # Once the prediction is made:
+    response = {
+        'prediction': rms,
+        'message': 'Pair BTC and ETH can be good for algorithmic trading' if rms < 0.02 else 'Pair BTC and ETH may not be the best option for algorithmic trading'
+    }
+    return jsonify(response)
+
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)
+And here is how you could call this API from JavaScript (included in an HTML file):
+
+html
+Copy code
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trading Bot</title>
+</head>
+<body>
+    <input type="text" id="pair" placeholder="Enter the pair e.g., BTC, ETH">
+    <button onclick="getPrediction()">Get Prediction</button>
+    <div id="prediction"></div>
+    
+    <script>
+        async function getPrediction(){
+            const pair = document.getElementById('pair').value;
+            
+            const response = await fetch('http://localhost:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ pair: pair })
+            });
+            
+            const data = await response.json();
+            
+            document.getElementById('prediction').innerText = data.message;
+        }
+    </script>
+</body>
+</html>
+With this approach, a user can input a pair of currencies for which they want to get the prediction. The JavaScript then fetches the prediction from the Flask API, which in turn makes the prediction with your Python code, and then displays the prediction on the webpage.
+
+Remember, you need to replace the placeholder Python code in the Flask API with your complete Python script.
+
+Please make sure Flask and Flask-CORS are installed in your environment. You may install them using the following pip command:
+
+bash
+Copy code
+pip install flask flask-cors
+This approach assumes your Python environment, Flask application, and front-end are all running on the same machine. If they are running on different machines (or servers), you will have to replace 'localhost' with the appropriate IP address.
