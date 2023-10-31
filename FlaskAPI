@@ -1,5 +1,3 @@
-Here is an architectural approach for your requirement:
-
 Flask API - This would serve as an interface between your Python code (deep learning model) and the outside world (in this case, your HTML/JavaScript front end).
 
 JavaScript (JS) - This is part of the HTML/CSS/JS trio that forms the structural, stylistic and functional skeleton of webpages. JS in this case would be used for calling the Flask API, obtaining the output and showing it on the webpage.
