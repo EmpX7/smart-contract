@@ -1,0 +1,5 @@
+export default function Chart({ data }) {
+  // Implement your chart component here
+
+  return <div>Chart goes here</div>;
+}
