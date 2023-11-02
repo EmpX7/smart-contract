@@ -22,3 +22,16 @@
 ├───.gitignore
 ├───package.json
 ├───README.md
+
+
+In ./controllers/trade_controller.js, you'll have functionality that interacts with your Python scripts and can then handle request data and send responses.
+
+Your Rack routes map to these controller actions in ./routes/trade_routes.js, and these routes are imported into your app.js to keep your main file clean and organized.
+
+The ./models/trade_model.js is where your business logic would typically live. It's not required for your Python scripts, but I included it if you expand your application.
+
+The ./utils/python_runner.js will be a simple utility file that allows you to run your Python scripts from Node.js, and capture the stdio output.
+
+In the ./test directory, you'll keep your tests. It's good practice to mirror your src directory structure in your test directory.
+
+Lastly, your .env file is for storing sensitive information like API keys, database URIs, secret keys etc. This file isn't committed to your version-control system.
