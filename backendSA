@@ -1,0 +1,24 @@
+./trade_bot_backend
+├───src
+│   ├───controllers  # Define actions to perform for different requests
+│   │   ├───trade_controller.js  # Handles all requests related to trades
+│   ├───scripts
+│   │   ├───fetch_data.py  # Python script for fetching crypto data and preparing the data
+│   │   ├───train_model.py  # Python script for model training
+│   │   └───predict.py  # Python script for predicting
+│   ├───routes
+│   │   ├───trade_routes.js  # Defines routes and maps to controllers for trades
+│   ├───models
+│   │   ├───trade_model.js  # Defines the model for trade
+│   ├───utils
+│   │   ├───python_runner.js  # Utility to run python scripts from Node.js
+│   ├───app.js  # Application entry point, defines express application and routes
+│   
+├───test
+│   ├───trade_model_test.js  # Test suite for the trade model
+│   ├───trade_routes_test.js  # Test suite for trade routes and controllers
+│   
+├───.env  # Stores environment variables like API keys
+├───.gitignore
+├───package.json
+├───README.md
