@@ -1,0 +1,6 @@
+import axios from 'axios';
+
+export default axios.create({
+  baseURL: '/api', // Set your python server API endpoint
+  responseType: 'json'
+});
