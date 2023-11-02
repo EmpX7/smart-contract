@@ -1,0 +1,17 @@
+import { useEffect, useState } from 'react';
+import TradingPair from '../components/TradingPair';
+
+export default function Home() {
+  const [pair, setPair] = useState('BTC-ETH');
+  const [predictions, setPredictions] = useState(null);
+
+  // Set pair will trigger this effect, calling your API and get the predictions
+  useEffect(() => {
+    fetch(`/api/predictPair?pair=${pair}`)
+      .then(response => response.json())
+      .then(data => setPredictions(data));
+  }, [pair]);
+
+  // Render the TradingPair component with the received predictions
+  return <TradingPair pair={pair} setPair={setPair} predictions={predictions} />;
+}
