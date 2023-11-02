@@ -1,0 +1,12 @@
+|-pages
+|---index.js
+|-components
+|---TradingPair.js
+|---Chart.js
+|-api
+|---client.js
+|-styles
+|---global.css
+
+
+need to connect this front-end with a back-end that exposes your Python code as a REST or GraphQL API, as React/Next.js runs on Node.js and can't directly execute Python code.
