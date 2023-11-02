@@ -1,0 +1,16 @@
+import Chart from './Chart';
+
+export default function TradingPair({ pair, setPair, predictions }) {
+  const handlePairChange = e => setPair(e.target.value);
+
+  // For selecting different pair
+  return (
+    <div>
+      <select name="pair" id="pair" value={pair} onChange={handlePairChange}>
+        <option value="BTC-ETH">BTC-ETH</option>
+        <option value="BTC-BNB">BTC-BNB</option>
+      </select>
+      <Chart data={predictions} /> // Call the Chart component from here
+    </div>
+  );
+}
