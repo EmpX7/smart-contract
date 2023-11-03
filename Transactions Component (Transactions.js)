@@ -1,0 +1,13 @@
+import React from 'react';
+
+class Transactions extends React.Component {
+  render() {
+    return (
+      <div className='transactions'>
+        {/* Code to display cryptocurrency transactions */}
+      </div>
+    );
+  }
+}
+
+export default Transactions;
