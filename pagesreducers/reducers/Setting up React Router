@@ -1,0 +1,17 @@
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import ComponentOne from './ComponentOne';
+import ComponentTwo from './ComponentTwo';
+
+function App() {
+    return (
+        <Router>
+            <Switch>
+                <Route path="/routeOne" component={ComponentOne} />
+                <Route path="/routeTwo" component={ComponentTwo} />
+                // add more routes as needed
+            </Switch>
+        </Router>
+    );
+}
+
+export default App;
