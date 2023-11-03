@@ -1,0 +1,13 @@
+import React from 'react';
+
+class TradingChart extends React.Component {
+  render() {
+    return (
+      <div className='trading-chart'>
+        {/* Code to incorporate Chart.js or D3.js */}
+      </div>
+    );
+  }
+}
+
+export default TradingChart;
