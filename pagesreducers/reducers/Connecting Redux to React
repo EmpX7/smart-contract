@@ -1,0 +1,12 @@
+import { connect } from 'react-redux';
+import { fetchData } from './actions/dataActions';
+
+const mapStateToProps = (state) => ({
+  data: state.data
+});
+
+const mapDispatchToProps = {
+  fetchData
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(YourComponent);
