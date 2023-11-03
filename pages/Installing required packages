@@ -1,0 +1,5 @@
+npm install react redux react-redux react-router-dom redux-thunk axios
+or
+yarn add react redux react-redux react-router-dom redux-thunk axios
+
+
